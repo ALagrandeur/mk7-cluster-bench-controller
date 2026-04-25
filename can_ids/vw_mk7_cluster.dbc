@@ -1,0 +1,202 @@
+VERSION "MK7 cluster bench DBC v1 - based on r00li/CarCluster (Golf 7 MQB) + openDBC vw_mqb"
+
+NS_ :
+    NS_DESC_
+    CM_
+    BA_DEF_
+    BA_
+    VAL_
+    CAT_DEF_
+    CAT_
+    FILTER
+    BA_DEF_DEF_
+    EV_DATA_
+    ENVVAR_DATA_
+    SGTYPE_
+    SGTYPE_VAL_
+    BA_DEF_SGTYPE_
+    BA_SGTYPE_
+    SIG_TYPE_REF_
+    VAL_TABLE_
+    SIG_GROUP_
+    SIG_VALTYPE_
+    SIGTYPE_VALTYPE_
+    BO_TX_BU_
+    BA_DEF_REL_
+    BA_REL_
+    BA_DEF_DEF_REL_
+    BU_SG_REL_
+    BU_EV_REL_
+    BU_BO_REL_
+    SG_MUL_VAL_
+
+BS_:
+
+BU_: Cluster Gateway EngineECU AirbagECU TCM ESC EPS Tester
+
+
+BO_ 960 Klemmen_Status_01: 4 Gateway
+ SG_ CHECKSUM : 0|8@1+ (1,0) [0|255] "" Cluster,EngineECU,AirbagECU
+ SG_ COUNTER : 8|4@1+ (1,0) [0|15] "" Cluster,EngineECU,AirbagECU
+ SG_ ZAS_Kl_S : 16|1@1+ (1,0) [0|1] "" Cluster
+ SG_ ZAS_Kl_15 : 17|1@1+ (1,0) [0|1] "" Cluster,EngineECU,AirbagECU
+ SG_ ZAS_Kl_X : 18|1@1+ (1,0) [0|1] "" Cluster
+ SG_ ZAS_Kl_50 : 19|1@1+ (1,0) [0|1] "" Cluster
+
+BO_ 263 Motor_04: 8 EngineECU
+ SG_ MO_Istgang : 8|4@1+ (1,0) [0|15] "" Cluster
+ SG_ MO_Sollgang : 12|4@1+ (1,0) [0|15] "" Cluster
+ SG_ MO_Oeldruck : 16|8@1+ (0.04,0) [0|10] "Bar" Cluster
+ SG_ MO_Anzeigedrehz : 24|12@1+ (3,0) [0|12282] "RPM" Cluster
+ SG_ MO_Schaltempf_verfbar : 38|1@1+ (1,0) [0|1] "" Cluster
+ SG_ MO_Ladedruck : 39|9@1+ (0.01,0) [0|5.1] "Bar" Cluster
+ SG_ MO_KVS : 48|15@1+ (1,0) [0|32767] "uL" Cluster
+ SG_ MO_KVS_Ueberlauf : 63|1@1+ (1,0) [0|1] "" Cluster
+
+BO_ 1601 Motor_Code_01: 8 EngineECU
+ SG_ Motor_Code_01_CRC : 0|8@1+ (1,0) [0|255] "" Cluster
+ SG_ Motor_Code_01_BZ : 8|4@1+ (1,0) [0|15] "" Cluster
+ SG_ Motor_Code_01_Type : 12|4@1+ (1,0) [0|15] "" Cluster
+
+BO_ 1600 Motor_07: 8 EngineECU
+ SG_ MO_QBit_Ansaugluft_Temp : 0|1@1+ (1,0) [0|1] "" Cluster
+ SG_ MO_QBit_Oel_Temp : 1|1@1+ (1,0) [0|1] "" Cluster
+ SG_ MO_QBit_Kuehlmittel_Temp : 2|1@1+ (1,0) [0|1] "" Cluster
+ SG_ MO_Ansaugluft_Temp : 8|8@1+ (0.75,-48) [-48|141.75] "DegC" Cluster
+ SG_ MO_Oel_Temp : 16|8@1+ (1,-60) [-60|192] "DegC" Cluster
+ SG_ MO_Kuehlmittel_Temp_Sensor : 24|8@1+ (0.75,-48) [-48|141.75] "DegC" Cluster
+
+BO_ 1607 Motor_09: 8 EngineECU
+ SG_ MO_Coolant_Temp_Display : 0|8@1+ (1,0) [0|255] "" Cluster
+ SG_ Motor_09_b1_magic : 8|8@1+ (1,0) [0|255] "" Cluster
+ SG_ Motor_09_b2_magic : 16|8@1+ (1,0) [0|255] "" Cluster
+ SG_ Motor_09_b3_magic : 24|8@1+ (1,0) [0|255] "" Cluster
+ SG_ Motor_09_b7_magic : 56|8@1+ (1,0) [0|255] "" Cluster
+
+BO_ 958 Motor_14: 8 EngineECU
+ SG_ MO_StartStopp_Status : 12|2@1+ (1,0) [0|3] "" Cluster
+ SG_ MO_Kl_75 : 18|1@1+ (1,0) [0|1] "" Cluster
+ SG_ MO_Kl_50 : 19|1@1+ (1,0) [0|1] "" Cluster
+ SG_ MO_Gangposition : 20|4@1+ (1,0) [0|15] "" Cluster
+ SG_ MO_Motor_laeuft : 39|1@1+ (1,0) [0|1] "" Cluster
+
+BO_ 168 Motor_12: 8 EngineECU
+ SG_ Motor_12_CRC : 0|8@1+ (1,0) [0|255] "" Cluster
+ SG_ Motor_12_BZ : 8|4@1+ (1,0) [0|15] "" Cluster
+ SG_ MO_QBit_Drehzahl_01 : 47|1@1+ (1,0) [0|1] "" Cluster
+ SG_ MO_Drehzahl_01 : 48|16@1+ (0.25,0) [0|16383] "RPM" Cluster
+
+BO_ 173 Getriebe_11: 8 TCM
+ SG_ Getriebe_11_CRC : 0|8@1+ (1,0) [0|255] "" Cluster
+ SG_ Getriebe_11_COUNTER : 8|4@1+ (1,0) [0|15] "" Cluster
+ SG_ GE_Fahrstufe : 42|4@1+ (1,0) [0|15] "" Cluster
+ SG_ GE_Zielgang : 60|4@1+ (1,0) [0|15] "" Cluster
+
+BO_ 916 WBA_03: 8 TCM
+ SG_ WBA_03_CRC : 0|8@1+ (1,0) [0|255] "" Cluster
+ SG_ WBA_03_GearSelector : 12|4@1+ (1,0) [0|15] "" Cluster
+ SG_ WBA_03_COUNTER : 8|4@1+ (1,0) [0|15] "" Cluster
+ SG_ WBA_03_Gear : 24|8@1+ (1,0) [0|255] "" Cluster
+
+BO_ 64 Airbag_01: 8 AirbagECU
+ SG_ Airbag_01_CRC : 0|8@1+ (1,0) [0|255] "" Cluster
+ SG_ Airbag_01_COUNTER : 8|4@1+ (1,0) [0|15] "" Cluster
+
+BO_ 253 ESP_21: 8 ESC
+ SG_ ESP_21_CRC : 0|8@1+ (1,0) [0|255] "" Cluster
+ SG_ ESP_21_COUNTER : 8|4@1+ (1,0) [0|15] "" Cluster
+ SG_ ESP_v_Signal : 32|16@1+ (0.01,0) [0|655.35] "km/h" Cluster
+
+BO_ 1629 ESP_20: 8 ESC
+ SG_ ESP_20_CRC : 0|8@1+ (1,0) [0|255] "" Cluster
+ SG_ ESP_20_COUNTER : 8|4@1+ (1,0) [0|15] "" Cluster
+ SG_ ESP_Tire_Circumference : 16|16@1+ (1,0) [0|65535] "mm" Cluster
+
+BO_ 795 ESP_24: 8 ESC
+ SG_ ESP_24_DistanceCounter : 8|24@1+ (1,0) [0|16777215] "" Cluster
+
+BO_ 798 TSK_07: 8 EngineECU
+ SG_ TSK_07_CRC : 0|8@1+ (1,0) [0|255] "" Cluster
+ SG_ TSK_07_COUNTER : 8|4@1+ (1,0) [0|15] "" Cluster
+
+BO_ 810 LH_EPS_01: 8 EPS
+ SG_ LH_EPS_01_CRC : 0|8@1+ (1,0) [0|255] "" Cluster
+ SG_ LH_EPS_01_COUNTER : 8|4@1+ (1,0) [0|15] "" Cluster
+
+BO_ 1520 Dimmung_01: 8 Gateway
+ SG_ DI_KL_58xs : 0|8@1+ (1,0) [0|255] "" Cluster
+ SG_ DI_Display_Nachtdesign : 15|1@1+ (1,0) [0|1] "" Cluster
+ SG_ DI_KL_58xt : 16|7@1+ (1,0) [0|100] "Percent" Cluster
+
+BO_ 779 Kombi_01: 8 Gateway
+ SG_ Kombi_01_BZ : 8|4@1+ (1,0) [0|15] "" Cluster
+ SG_ KBI_ABS_Lampe : 0|1@1+ (1,0) [0|1] "" Cluster
+ SG_ KBI_ESP_Lampe : 1|1@1+ (1,0) [0|1] "" Cluster
+ SG_ KBI_BKL_Lampe : 2|1@1+ (1,0) [0|1] "" Cluster
+ SG_ KBI_Airbag_Lampe : 3|1@1+ (1,0) [0|1] "" Cluster
+ SG_ KBI_Lenkung_Lampe : 5|1@1+ (1,0) [0|1] "" Cluster
+ SG_ KBI_V_Digital : 24|9@1+ (1,0) [0|511] "km/h" Cluster
+ SG_ KBI_angez_Geschw : 48|10@1+ (0.32,0) [0|325.12] "km/h" Cluster
+
+BO_ 1471 MFSW: 4 Gateway
+ SG_ MFSW_Button : 0|8@1+ (1,0) [0|255] "" Cluster
+
+BO_ 781 PARKBRAKE: 8 Gateway
+ SG_ PARK_Handbrake : 0|1@1+ (1,0) [0|1] "" Cluster
+
+BO_ 870 BLINKMODI_02: 8 Gateway
+ SG_ BLINK_Mode : 0|8@1+ (1,0) [0|255] "" Cluster
+
+BO_ 1822 OUTDOOR_TEMP: 8 Gateway
+ SG_ OUTDOOR_Temp : 0|8@1+ (0.5,-50) [-50|77.5] "DegC" Cluster
+
+BO_ 1411 DOOR_STATUS: 8 Gateway
+ SG_ DOOR_FrontLeft : 0|1@1+ (1,0) [0|1] "" Cluster
+ SG_ DOOR_FrontRight : 1|1@1+ (1,0) [0|1] "" Cluster
+ SG_ DOOR_RearLeft : 2|1@1+ (1,0) [0|1] "" Cluster
+ SG_ DOOR_RearRight : 3|1@1+ (1,0) [0|1] "" Cluster
+
+BO_ 1610 TPMS: 8 Cluster
+ SG_ TPMS_Status : 0|8@1+ (1,0) [0|255] "" Gateway
+
+BO_ 1813 Tester_Cluster_Req: 8 Tester
+ SG_ UDS_Length : 0|8@1+ (1,0) [0|7] "" Cluster
+ SG_ UDS_Service : 8|8@1+ (1,0) [0|255] "" Cluster
+ SG_ UDS_DID : 16|16@1+ (1,0) [0|65535] "" Cluster
+
+BO_ 1918 Cluster_Tester_Resp: 8 Cluster
+ SG_ UDS_Length : 0|8@1+ (1,0) [0|7] "" Tester
+ SG_ UDS_PosResp : 8|8@1+ (1,0) [0|255] "" Tester
+ SG_ UDS_DID : 16|16@1+ (1,0) [0|65535] "" Tester
+ SG_ UDS_DID_22D0_CoolantByte : 32|8@1+ (0.75,0) [0|255] "DegC" Tester
+
+
+CM_ BO_ 960 "Klemmen_Status_01: ignition simulation. Wakes engine ECU/airbag (NOT cluster directly). Cluster needs hardware Kl.15 + this for full activation. byte 2 = 0x03 sets Kl.15 + Kl.S.";
+CM_ BO_ 263 "Motor_04: CONFIRMED on bench - byte 3 controls RPM tachometer needle. Bytes 3-4 = 12-bit RPM (raw * 3 RPM/tick). Byte 4 high nibble + byte 5 = boost pressure (raw * 0.01 bar). No CRC, no counter.";
+CM_ BO_ 1601 "Motor_Code_01: engine code/version heartbeat. Sent BEFORE Motor_07/Motor_09 by r00li code as engine ECU 'alive' signal. Has CRC + counter.";
+CM_ BO_ 1600 "Motor_07: contains intake/oil/coolant temp sensor values. Byte 0 has QBit validity flags (bit 2 for coolant). NOT the message that drives the cluster gauge — that's Motor_09.";
+CM_ BO_ 1607 "Motor_09: ★ THE COOLANT GAUGE MESSAGE ★. Per r00li/CarCluster (working Golf 7 MQB cluster code). Byte 0 = mapped coolant value (0x80 for 50C, 0xED for 130C, linear). Bytes 1-7 MUST contain magic values: {0xFD, 0xFF, 0x7F, 0x00, 0x00, 0x00, 0xC1}. Sent at 50ms (20Hz) along with Motor_Code_01 and Motor_04.";
+CM_ BO_ 958 "Motor_14: engine status. MO_Motor_laeuft (engine running flag) at bit 39 = byte 4 bit 7. Has MQB CRC + counter.";
+CM_ BO_ 168 "Motor_12: engine RPM (real, not display) at bytes 6-7 (16-bit, formula raw * 0.25 RPM). Has CRC + counter.";
+CM_ BO_ 173 "Getriebe_11: gear position from TCM/DSG. Byte 5 low nibble (GE_Fahrstufe) = current gear. Has MQB CRC + counter.";
+CM_ BO_ 916 "WBA_03: gear position display message used by r00li code. Different from Getriebe_11. byte 1 = GearSelector|seq, byte 3 = gear number. Has MQB CRC.";
+CM_ BO_ 64 "Airbag_01: airbag controller heartbeat. Has MQB CRC + counter. Required to clear airbag warning lamp.";
+CM_ BO_ 253 "ESP_21: vehicle speed from ESC. Bytes 4-5 LE = speed * 100 (formula 0.01 km/h). Has CRC.";
+CM_ BO_ 1629 "ESP_20: tire circumference / ESC config. Has CRC.";
+CM_ BO_ 795 "ESP_24: distance counter for cluster odometer. Sent every 50ms at 20Hz.";
+CM_ BO_ 798 "TSK_07: torque coordinator. Engine ECU heartbeat. Has CRC.";
+CM_ BO_ 810 "LH_EPS_01: electric power steering. Required heartbeat.";
+CM_ BO_ 1520 "Dimmung_01: cluster backlight control. Byte 1 = 0-100 percent.";
+CM_ BO_ 779 "Kombi_01: gateway -> cluster. Lamp states + digital/analog speed display values.";
+CM_ BO_ 1471 "MFSW: MultiFunctional Steering Wheel buttons (4 bytes). 0x06+0x01=Up, 0x06+0x0F=Down, 0x07+0x01=OK.";
+CM_ BO_ 781 "PARKBRAKE: handbrake status broadcast.";
+CM_ BO_ 1813 "Diagnostic UDS request to cluster (0x714). Format: length, service (0x22=ReadDataByIdentifier), DID, ...";
+CM_ BO_ 1918 "Diagnostic UDS response from cluster (0x77E). For DID 0x22D0 returns 1-byte coolant temp (formula byte * 0.75 = DegC).";
+
+CM_ SG_ 1607 MO_Coolant_Temp_Display "★ THE COOLANT GAUGE BYTE ★. Linear map: 0x80 = 50C, 0xED = 130C. byte = (temp_C - 50) * (0xED - 0x80) / (130 - 50) + 0x80. Cluster needs full Motor_09 buffer with magic bytes 1-7 = {FD FF 7F 00 00 00 C1} for the message to be accepted.";
+CM_ SG_ 263 MO_Anzeigedrehz "RPM displayed on tachometer. CONFIRMED: byte 3=0xED maxes the needle. Formula raw * 3 RPM (12-bit LE in bytes 3-4). For 4000 RPM: raw = 4000/3 = 1333 = 0x535 → byte 3=0x35, byte 4 nibble bas=0x05.";
+CM_ SG_ 263 MO_Ladedruck "Boost pressure available HERE in Motor_04. Bytes 4-5 (9-bit). For 1.5 bar boost: raw = 150, formula raw * 0.01 bar.";
+
+
+VAL_ 173 GE_Fahrstufe 5 "P" 6 "R" 7 "N" 8 "D" 9 "S" ;
+VAL_ 916 WBA_03_Gear 0 "Park/Neutral" 1 "1" 2 "2" 3 "3" 4 "4" 5 "5" 6 "6" 7 "7" 8 "8" 9 "9" 10 "R" 11 "Reverse-alt" ;

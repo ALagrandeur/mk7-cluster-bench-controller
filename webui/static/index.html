@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MK7 Cluster Bench Controller</title>
+<link rel="stylesheet" href="style.css?v=lights1">
+</head>
+<body>
+
+<header>
+  <div class="brand">MK7 Cluster — Bench Controller</div>
+  <div class="conn">
+    <select id="port"></select>
+    <button id="refresh-ports" title="Rescan COM ports">↻</button>
+    <label class="hdr-label">CAN
+      <select id="can-speed" title="CAN bus 0 bitrate — auto-configured on connect">
+        <option value="125000">125 kbps</option>
+        <option value="250000">250 kbps</option>
+        <option value="500000" selected>500 kbps (MQB Powertrain)</option>
+        <option value="1000000">1 Mbps</option>
+      </select>
+    </label>
+    <button id="connect">Connect</button>
+    <button id="disconnect" disabled>Disconnect</button>
+    <span id="status" class="status off">disconnected</span>
+  </div>
+</header>
+
+<div id="vehicle-banner" class="vehicle-banner bench">
+  <div class="vehicle-info">
+    <span class="vehicle-label">MODE</span>
+    <span id="vehicle-state-text">🔧 BENCH MODE — toutes les fonctions sont disponibles (cluster isolé sur table)</span>
+  </div>
+  <label class="vehicle-switch">
+    <span class="vehicle-switch-text">🔧 Bench  →  🚗 Vehicle</span>
+    <input type="checkbox" id="vehicle-mode">
+    <span class="vehicle-slider"></span>
+  </label>
+</div>
+
+<div id="arm-banner" class="arm-banner disarmed">
+  <div class="arm-info">
+    <span class="arm-label">SAFETY</span>
+    <span id="arm-state-text">DISARMED — periodic transmissions blocked. Buttons rejected.</span>
+  </div>
+  <label class="arm-switch">
+    <input type="checkbox" id="armed">
+    <span class="arm-slider"></span>
+  </label>
+</div>
+
+<main>
+
+  <!-- ============== WAKE ============== -->
+  <section class="card fn-card bench-only">
+    <div class="fn-header">
+      <h2>🔆 Cluster Wake</h2>
+      <label class="fn-toggle">
+        <input type="checkbox" data-fn-enable="wake">
+        <span class="fn-toggle-track"></span>
+        <span class="fn-toggle-label">OFF</span>
+      </label>
+    </div>
+    <p class="fn-hint">Klemmen_Status_01 — simule "ignition+start ON" pour réveiller le cluster (avec hardware Kl.15).<br>
+       <b>Active aussi automatiquement le System Context Bundle</b> (Airbag_01, ESP_05, ESP_10, ESP_20, TSK_07, LH_EPS_01) à 10 Hz — sans ces heartbeats, le cluster invalide la vitesse après 10s, jette des warnings frein, et ignore les boutons MFA.</p>
+    <div class="fn-frame">
+      <span class="fn-id">0x3C0</span>
+      <span class="fn-payload" id="wake-payload">XX XX 03 00</span>
+      <span class="fn-info">CRC + counter MQB auto · 10 Hz</span>
+    </div>
+    <div class="fn-frame" style="opacity: 0.7;">
+      <span class="fn-id">+bundle</span>
+      <span class="fn-payload">0x040, 0x106, 0x116, 0x65D, 0x31E, 0x32A</span>
+      <span class="fn-info">Airbag, ESP_05/10/20, TSK_07, LH_EPS_01 · 10 Hz auto</span>
+    </div>
+  </section>
+
+  <!-- ============== RPM (next to Wake) ============== -->
+  <section class="card fn-card bench-only">
+    <div class="fn-header">
+      <h2>⚙️ RPM Tachometer</h2>
+      <label class="fn-toggle">
+        <input type="checkbox" data-fn-enable="engine_rpm">
+        <span class="fn-toggle-track"></span>
+        <span class="fn-toggle-label">OFF</span>
+      </label>
+    </div>
+    <p class="fn-hint">Motor_04 bytes 3-4 LE = floor(rpm/3). Pas de CRC.</p>
+    <div class="fn-slider-row">
+      <input id="rpm-slider" type="range" min="0" max="8000" step="50" value="1500">
+      <span class="fn-value"><b id="rpm-val">1500</b> RPM</span>
+    </div>
+    <div class="fn-frame">
+      <span class="fn-id">0x107</span>
+      <span class="fn-payload" id="rpm-payload">00 00 00 F4 01 00 00 00</span>
+      <span class="fn-info">no CRC · 20 Hz</span>
+    </div>
+  </section>
+
+  <!-- ============== COOLANT / BOOST GAUGE ============== -->
+  <section class="card fn-card" style="grid-column: 1 / -1;">
+    <div class="fn-header">
+      <h2>🌡️ Coolant / Boost Gauge</h2>
+      <label class="fn-toggle">
+        <input type="checkbox" data-fn-enable="coolant">
+        <span class="fn-toggle-track"></span>
+        <span class="fn-toggle-label">OFF</span>
+      </label>
+    </div>
+    <p class="fn-hint">Motor_09 + auto-bundle engine_code (Motor_Code_01 0x641 requis comme contexte). Le slider se comporte selon le mode choisi.</p>
+
+    <div class="mode-row">
+      <label class="mode-pill"><input type="radio" name="coolant-mode" value="temp"><span>🌡️ Coolant Temp (°C direct)</span></label>
+      <label class="mode-pill"><input type="radio" name="coolant-mode" value="boost" checked><span>💨 Boost Pressure (BAR abs)</span></label>
+    </div>
+
+    <div class="fn-slider-row" id="coolant-temp-row" hidden>
+      <input id="coolant-slider-temp" type="range" min="50" max="130" step="1" value="90">
+      <span class="fn-value"><b id="coolant-temp-val">90</b> °C</span>
+    </div>
+    <div class="fn-slider-row" id="coolant-boost-row">
+      <input id="coolant-slider-boost" type="range" min="0.3" max="2.0" step="0.05" value="0.3">
+      <span class="fn-value"><b id="coolant-boost-val">0.30</b> BAR abs</span>
+    </div>
+
+    <div class="fn-frame">
+      <span class="fn-id">0x647</span>
+      <span class="fn-payload" id="coolant-payload">80 FD FF 7F 00 00 00 C1</span>
+      <span class="fn-info" id="coolant-info">→ 50.0 °C (cold) · 20 Hz</span>
+    </div>
+
+    <details class="coolant-advanced">
+      <summary>⚙️ Advanced — boost mapping, formule, MAP/temp réelles UDS</summary>
+
+      <h4 style="margin-top: 12px; color: var(--accent);">Boost → Temperature mapping</h4>
+      <p class="hint">Quand le slider est en mode <b>Boost</b>: la valeur est mappée linéairement sur la plage temp.
+        Permet de "compresser" le boost dans la plage utile du cadran (au-dessus de la zone neutre 80-110°C).</p>
+      <div class="cfg-grid">
+        <label>MAP min (BAR abs) <input id="adv-map-low" type="number" step="0.05" value="0.3"></label>
+        <label>MAP max (BAR abs) <input id="adv-map-high" type="number" step="0.05" value="2.0"></label>
+        <label>Temp min (°C) <input id="adv-temp-low" type="number" step="1" value="50"></label>
+        <label>Temp max (°C) <input id="adv-temp-high" type="number" step="1" value="130"></label>
+      </div>
+
+      <h4>Motor_09 byte 0 formula (cluster reads this)</h4>
+      <p class="hint">Le byte 0 envoyé est calculé comme: <code>byte0 = round((temp_C - offset) / scale)</code><br>
+         Mapping linéaire r00li par défaut: 50°C → 0x80, 130°C → 0xED, soit scale=0.7339 offset=-43.94.</p>
+      <div class="cfg-grid">
+        <label>Scale (°C/byte) <input id="adv-scale" type="number" step="0.0001" value="0.7339"></label>
+        <label>Offset (°C) <input id="adv-offset" type="number" step="0.01" value="-43.94"></label>
+        <label>Rate (Hz) <input id="adv-rate" type="number" min="1" max="50" step="1" value="20"></label>
+      </div>
+      <div class="row">
+        <button id="adv-save">Save advanced config</button>
+        <span id="adv-status" class="hint"></span>
+      </div>
+
+      <h4>📡 Live UDS poll (réelles valeurs voiture)</h4>
+      <p class="hint">Quand le ESP32 est connecté en parallèle sur une voiture qui tourne, ce toggle interroge
+        en continu l'engine ECU pour afficher les <b>vraies</b> valeurs de MAP et coolant temp à côté du slider.
+        Inutile sur le bench (rien ne répondra).</p>
+      <label class="fn-toggle" style="margin-bottom: 10px;">
+        <input type="checkbox" id="live-diag">
+        <span class="fn-toggle-track"></span>
+        <span class="fn-toggle-label">Live UDS poll OFF</span>
+      </label>
+      <div class="live-grid">
+        <div class="live-card">
+          <div class="live-label">REAL MAP (Engine DID 0x39C0)</div>
+          <div class="live-value"><b id="live-map-val">—</b> <span class="live-unit">BAR abs</span></div>
+          <div class="live-age" id="live-map-age">never</div>
+        </div>
+        <div class="live-card">
+          <div class="live-label">REAL Coolant Temp (Engine DID 0x202C)</div>
+          <div class="live-value"><b id="live-temp-val">—</b> <span class="live-unit">°C</span></div>
+          <div class="live-age" id="live-temp-age">never</div>
+        </div>
+        <div class="live-card">
+          <div class="live-label">CLUSTER displayed temp (DID 0x22D0)</div>
+          <div class="live-value"><b id="cluster-temp-val">—</b> <span class="live-unit">°C</span></div>
+          <button id="cluster-ping" style="margin-top: 6px;">Ping cluster</button>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============== TRANSMISSION GEAR ============== -->
+  <section class="card fn-card bench-only">
+    <div class="fn-header">
+      <h2>🅿️ Transmission (MFA gear indicator)</h2>
+      <label class="fn-toggle">
+        <input type="checkbox" data-fn-enable="gear">
+        <span class="fn-toggle-track"></span>
+        <span class="fn-toggle-label">OFF</span>
+      </label>
+    </div>
+    <p class="fn-hint">WBA_03 (0x394). byte 1 high nibble = selector: P=0x10, R=0x20, N=0x30, D=0x40, <b>S=0x50</b>, M(manual)=0x60. byte 3 = M-gear (0 pour autres modes).</p>
+    <div class="gear-row">
+      <button class="gear" data-gear="P">P</button>
+      <button class="gear" data-gear="R">R</button>
+      <button class="gear" data-gear="N">N</button>
+      <button class="gear" data-gear="D">D</button>
+      <button class="gear" data-gear="S">S</button>
+    </div>
+    <div class="fn-frame">
+      <span class="fn-id">0x394</span>
+      <span class="fn-payload" id="gear-payload">XX 1X 00 00 00 04 00 00</span>
+      <span class="fn-info" id="gear-info">P · selector 0x10, m_gear=0 · 20 Hz</span>
+    </div>
+  </section>
+
+  <!-- ============== MFA BUTTONS (with editable config per button) ============== -->
+  <section class="card mfa-card bench-only" style="grid-column: 1 / -1;">
+    <h2>🎮 MFA Steering Wheel Buttons</h2>
+    <p class="fn-hint">Click le bouton pour envoyer (press + release auto). Chaque bouton a son <b>ID</b>, <b>length</b>, <b>press payload</b> et <b>release payload</b> éditables. Raccourcis clavier: ←↑→↓ + Enter (OK) + Esc (BACK).<br>
+       💡 <b>Pour identifier les vraies adresses</b>: branche en parallèle sur le CAN du véhicule, sniffe avec SavvyCAN pendant que tu presses chaque bouton du volant, repère l'ID + le payload qui change, puis édite ici et clique <b>Save buttons</b>.</p>
+    <div id="mfa-rows"></div>
+    <div class="row" style="margin-top: 12px;">
+      <button id="mfa-save">💾 Save buttons config</button>
+      <button id="mfa-reset" class="scanner-stop">⟲ Reset to r00li defaults</button>
+      <span id="mfa-status" class="hint"></span>
+    </div>
+  </section>
+
+  <!-- ============== DASHBOARD LIGHTS ============== -->
+  <section class="card lights-card bench-only" style="grid-column: 1 / -1;">
+    <h2>💡 Dashboard Lights & Indicators</h2>
+    <p class="fn-hint">Chaque ligne = un témoin. Click <b>ON</b> pour envoyer le payload "allumé", <b>OFF</b> pour éteindre.<br>
+       Pré-remplis avec les bits connus (Kombi_01 0x30B byte 0/2 d'openDBC). Les ID = <code>0x000</code> sont à identifier dans SavvyCAN: branche en parallèle voiture, allume le témoin réel, repère l'ID + payload, édite ici, click <b>Save lights</b>.</p>
+    <div id="lights-rows"></div>
+    <div class="row" style="margin-top: 12px;">
+      <button id="lights-save">💾 Save lights config</button>
+      <button id="lights-add">➕ Add new light</button>
+      <button id="lights-reset" class="scanner-stop">⟲ Reset to defaults</button>
+      <span id="lights-status" class="hint"></span>
+    </div>
+  </section>
+
+  <!-- ============== FRAME LOG ============== -->
+  <section class="card" style="grid-column: 1 / -1;">
+    <h2>📋 Frame Log</h2>
+    <div class="log-controls">
+      <label><input id="log-tx" type="checkbox" checked> show TX</label>
+      <label><input id="log-rx" type="checkbox" checked> show RX</label>
+      <button id="log-clear">Clear</button>
+    </div>
+    <div id="log" class="log"></div>
+  </section>
+
+  <!-- ============== ADVANCED ============== -->
+  <section class="card" style="grid-column: 1 / -1;">
+    <details>
+      <summary><b>⚙️ Advanced — Raw CAN sender + reset</b></summary>
+      <div style="padding-top: 12px;">
+        <h3 style="margin-top: 0;">Raw CAN Sender</h3>
+        <div class="row">
+          <label>ID (hex) <input id="raw-id" type="text" value="0x000" style="width:120px"></label>
+          <label>Data (hex) <input id="raw-data" type="text" value="" style="width:300px"></label>
+          <label>Ext <input id="raw-ext" type="checkbox"></label>
+          <button id="raw-send">Send once</button>
+        </div>
+        <div class="row">
+          <label>Rate (Hz) <input id="raw-rate" type="number" min="0.1" max="50" step="0.5" value="5" style="width:80px"></label>
+          <label class="fn-toggle">
+            <input type="checkbox" id="raw-periodic">
+            <span class="fn-toggle-track"></span>
+            <span class="fn-toggle-label" id="raw-periodic-label">Periodic OFF</span>
+          </label>
+          <span class="hint" id="raw-periodic-status">Périodique = envoie en boucle à la fréquence indiquée jusqu'au toggle off. Requiert ARMED.</span>
+        </div>
+      </div>
+      <div style="padding-top: 16px;">
+        <h3>Reset config</h3>
+        <button id="reset-cfg" class="scanner-stop">⟲ Reset all to code defaults</button>
+        <span id="cfg-status" class="hint"></span>
+      </div>
+    </details>
+  </section>
+
+</main>
+
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+<script src="app.js?v=lights1"></script>
+</body>
+</html>

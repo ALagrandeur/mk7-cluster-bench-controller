@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+.venv/
+venv/
+env/
+
+# Runtime config (user-specific, may contain edited CAN IDs)
+webui/config.json
+
+# Personal data — user's vehicle CAN captures (may contain VIN / sensitive info)
+*.csv
+
+# Personal photos of the cluster
+*.jpg
+*.jpeg
+*.png
+!webui/static/*.png
+
+# Windows-specific
+*.lnk
+desktop.ini
+Thumbs.db
+
+# Third-party firmware (not part of this project — get it from collin80/ESP32RET)
+ESP32RET_Updater/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*~
+
+# OS
+.DS_Store
