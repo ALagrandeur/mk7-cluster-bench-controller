@@ -243,6 +243,32 @@ main {
 .light-row > .light-del:hover { color: var(--danger); }
 .lights-card .fn-hint { line-height: 1.5; }
 
+/* -------- Bus Sniffer table -------- */
+.sniffer-controls { gap: 12px; margin-bottom: 8px; }
+.sniffer-controls label { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+.sniffer-table-wrapper {
+  background: #0e1014; border: 1px solid var(--border); border-radius: 6px;
+  max-height: 500px; overflow-y: auto;
+}
+.sniffer-table {
+  width: 100%; border-collapse: collapse; font-family: ui-monospace, "Cascadia Code", Consolas, monospace; font-size: 12px;
+}
+.sniffer-table thead { position: sticky; top: 0; background: #1b1e23; z-index: 1; }
+.sniffer-table th {
+  text-align: left; padding: 6px 10px; color: var(--muted); font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.5px; font-size: 10px; border-bottom: 1px solid var(--border);
+}
+.sniffer-table td { padding: 4px 10px; border-bottom: 1px solid #1b1e23; }
+.sniffer-table tr:hover td { background: #1b1e23; }
+.sniffer-table .col-id { color: var(--accent); font-weight: 700; width: 80px; }
+.sniffer-table .col-hz { color: var(--accent2); width: 60px; text-align: right; }
+.sniffer-table .col-data { color: var(--fg); }
+.sniffer-table .col-diff { color: var(--accent); width: 100px; }
+.sniffer-table .col-count { color: var(--muted); width: 80px; text-align: right; }
+.sniffer-table .col-age { color: var(--muted); width: 80px; text-align: right; }
+.sniffer-table tr.recent td { background: rgba(255, 174, 62, 0.08); }
+.sniffer-table tr.snapshot-diff td { background: rgba(70, 211, 154, 0.10); }
+
 /* -------- Frame log -------- */
 .log {
   background: #0e1014; border-radius: 6px; padding: 8px;

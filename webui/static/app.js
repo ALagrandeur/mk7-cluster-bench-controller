@@ -580,6 +580,106 @@ sock.on("raw_periodic_changed", (d) => {
   $("#raw-periodic-label").textContent = d.enabled ? `Periodic ON @ ${d.rate_hz}Hz` : "Periodic OFF";
 });
 
+// ---------- Bus Sniffer (read-only RX aggregation) ----------
+
+const sniffer = {
+  paused: false,
+  data: new Map(),       // id (number) → {count, lastData (hex string), lastTs, recentTimestamps[], snapshotData}
+};
+
+function snifferOnFrame(f) {
+  if (sniffer.paused) return;
+  if (f.dir !== "RX") return;  // sniffer = passive listening only
+  const id = parseInt(f.id, 16);
+  const now = Date.now() / 1000;
+  let entry = sniffer.data.get(id);
+  if (!entry) {
+    entry = { count: 0, lastData: "", lastTs: 0, recentTimestamps: [], snapshotData: null };
+    sniffer.data.set(id, entry);
+  }
+  entry.count += 1;
+  entry.lastData = f.data;
+  entry.lastTs = now;
+  // Keep timestamps from the last 1 second for Hz calc
+  entry.recentTimestamps.push(now);
+  while (entry.recentTimestamps.length && entry.recentTimestamps[0] < now - 1.0) {
+    entry.recentTimestamps.shift();
+  }
+}
+
+function snifferRender() {
+  const tbody = $("#sniffer-rows");
+  if (!tbody) return;
+  const filter = ($("#sniffer-filter").value || "").toLowerCase().replace(/^0x/, "");
+  const sortBy = $("#sniffer-sort").value;
+  const now = Date.now() / 1000;
+
+  let entries = Array.from(sniffer.data.entries()).map(([id, e]) => ({
+    id, ...e, hz: e.recentTimestamps.length, ageMs: (now - e.lastTs) * 1000,
+  }));
+
+  if (filter) {
+    entries = entries.filter((e) => e.id.toString(16).toUpperCase().includes(filter.toUpperCase()));
+  }
+
+  entries.sort((a, b) => {
+    switch (sortBy) {
+      case "id":       return a.id - b.id;
+      case "hz":       return b.hz - a.hz;
+      case "lastSeen": return a.ageMs - b.ageMs;
+      case "count":    return b.count - a.count;
+      default:         return a.id - b.id;
+    }
+  });
+
+  // Build rows
+  const html = entries.map((e) => {
+    const idStr = "0x" + e.id.toString(16).toUpperCase().padStart(3, "0");
+    const ageStr = e.ageMs < 1000 ? `${e.ageMs.toFixed(0)} ms` : `${(e.ageMs/1000).toFixed(1)} s`;
+    const recent = e.ageMs < 200 ? "recent" : "";
+    const diff = e.snapshotData !== null && e.snapshotData !== e.lastData ? "snapshot-diff" : "";
+    const diffStr = e.snapshotData !== null
+      ? (e.snapshotData === e.lastData ? "—" : `was: ${e.snapshotData.slice(0, 23)}`)
+      : "—";
+    return `<tr class="${recent} ${diff}">
+      <td class="col-id">${idStr}</td>
+      <td class="col-hz">${e.hz}</td>
+      <td class="col-data">${e.lastData}</td>
+      <td class="col-diff">${diffStr}</td>
+      <td class="col-count">${e.count}</td>
+      <td class="col-age">${ageStr}</td>
+    </tr>`;
+  }).join("");
+  tbody.innerHTML = html;
+  $("#sniffer-status").textContent = sniffer.paused
+    ? `⏸ paused — ${sniffer.data.size} unique IDs observed`
+    : `Listening — ${sniffer.data.size} unique IDs (${entries.reduce((s,e) => s + e.hz, 0)} fps total)`;
+}
+
+$("#sniffer-clear").onclick = () => {
+  sniffer.data.clear();
+  snifferRender();
+};
+
+$("#sniffer-snapshot").onclick = () => {
+  for (const e of sniffer.data.values()) {
+    e.snapshotData = e.lastData;
+  }
+  snifferRender();
+};
+
+$("#sniffer-pause").onclick = () => {
+  sniffer.paused = !sniffer.paused;
+  $("#sniffer-pause").textContent = sniffer.paused ? "▶ Resume" : "⏸ Pause";
+  snifferRender();
+};
+
+$("#sniffer-filter").addEventListener("input", snifferRender);
+$("#sniffer-sort").addEventListener("change", snifferRender);
+
+// Refresh display 5x/sec
+setInterval(snifferRender, 200);
+
 // ---------- Frame log ----------
 
 const logEl = $("#log");
@@ -588,6 +688,9 @@ const showRx = () => $("#log-rx").checked;
 $("#log-clear").onclick = () => (logEl.innerHTML = "");
 
 sock.on("can_frame", (f) => {
+  // Always feed the sniffer first (read-only, runs even when log filters hide)
+  snifferOnFrame(f);
+
   const isRx = f.dir === "RX";
   if (isRx && !showRx()) return;
   if (!isRx && !showTx()) return;

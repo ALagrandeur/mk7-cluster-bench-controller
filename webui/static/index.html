@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>MK7 Cluster Bench Controller</title>
-<link rel="stylesheet" href="style.css?v=v8">
+<link rel="stylesheet" href="style.css?v=sniffer1">
 </head>
 <body>
 
@@ -271,6 +271,44 @@
     </div>
   </section>
 
+  <!-- ============== BUS SNIFFER (read-only, safe in any mode) ============== -->
+  <section class="card sniffer-card" style="grid-column: 1 / -1;">
+    <h2>👁️ Bus Sniffer (read-only)</h2>
+    <p class="fn-hint">Affiche en temps réel chaque CAN ID vu sur le bus avec sa <b>fréquence (Hz)</b>, le <b>dernier payload</b> reçu, et combien de temps depuis la dernière frame.<br>
+       <b>100% lecture seule</b> — pas de TX, pas de risque, fonctionne en bench ET en vehicle mode même sans ARMED.<br>
+       💡 Use case: avant de bricoler, branche-toi sur la voiture, regarde la fréquence/payload réel de <code>0x647</code> (Motor_09) pour caler tes propres broadcasts dessus.</p>
+    <div class="sniffer-controls row">
+      <label>Filter ID (substring): <input id="sniffer-filter" type="text" placeholder="ex: 647 ou 6" style="width:120px"></label>
+      <label>Sort by:
+        <select id="sniffer-sort">
+          <option value="id">ID (asc)</option>
+          <option value="hz" selected>Hz (desc)</option>
+          <option value="lastSeen">Last seen (newest)</option>
+          <option value="count">Total count (desc)</option>
+        </select>
+      </label>
+      <button id="sniffer-clear">⟲ Clear stats</button>
+      <button id="sniffer-snapshot">📸 Snapshot</button>
+      <button id="sniffer-pause">⏸ Pause</button>
+      <span id="sniffer-status" class="hint">Listening...</span>
+    </div>
+    <div class="sniffer-table-wrapper">
+      <table class="sniffer-table">
+        <thead>
+          <tr>
+            <th>CAN ID</th>
+            <th>Hz</th>
+            <th>Latest payload (hex)</th>
+            <th>Δ snapshot</th>
+            <th>Count</th>
+            <th>Last seen</th>
+          </tr>
+        </thead>
+        <tbody id="sniffer-rows"></tbody>
+      </table>
+    </div>
+  </section>
+
   <!-- ============== FRAME LOG ============== -->
   <section class="card" style="grid-column: 1 / -1;">
     <h2>📋 Frame Log</h2>
@@ -315,6 +353,6 @@
 </main>
 
 <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
-<script src="app.js?v=v8"></script>
+<script src="app.js?v=sniffer1"></script>
 </body>
 </html>
