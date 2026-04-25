@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>MK7 Cluster Bench Controller</title>
-<link rel="stylesheet" href="style.css?v=lights1">
+<link rel="stylesheet" href="style.css?v=v8">
 </head>
 <body>
 
@@ -157,30 +157,64 @@
       </div>
 
       <h4>📡 Live UDS poll (réelles valeurs voiture)</h4>
-      <p class="hint">Quand le ESP32 est connecté en parallèle sur une voiture qui tourne, ce toggle interroge
-        en continu l'engine ECU pour afficher les <b>vraies</b> valeurs de MAP et coolant temp à côté du slider.
-        Inutile sur le bench (rien ne répondra).</p>
+      <p class="hint">Quand le ESP32 est connecté en parallèle sur voiture qui tourne, interroge l'engine ECU
+        pour afficher les vraies valeurs en temps réel. <b>Sûr en vehicle mode</b> — ce sont des
+        requêtes diagnostiques (lecture seule) comme un scanner OBD-II. Tu peux modifier les IDs/DIDs
+        ci-dessous pour récupérer n'importe quel autre signal du moteur.</p>
       <label class="fn-toggle" style="margin-bottom: 10px;">
         <input type="checkbox" id="live-diag">
         <span class="fn-toggle-track"></span>
         <span class="fn-toggle-label">Live UDS poll OFF</span>
       </label>
-      <div class="live-grid">
-        <div class="live-card">
-          <div class="live-label">REAL MAP (Engine DID 0x39C0)</div>
+
+      <div class="uds-poll-block">
+        <div class="uds-poll-header">
+          <span class="uds-poll-name">📊 MAP (Saugrohrdruck)</span>
           <div class="live-value"><b id="live-map-val">—</b> <span class="live-unit">BAR abs</span></div>
           <div class="live-age" id="live-map-age">never</div>
         </div>
-        <div class="live-card">
-          <div class="live-label">REAL Coolant Temp (Engine DID 0x202C)</div>
+        <div class="cfg-grid">
+          <label>Request ID (hex) <input id="uds-map-req" type="text" value="0x7E0"></label>
+          <label>Response ID (hex) <input id="uds-map-resp" type="text" value="0x7E8"></label>
+          <label>DID (hex) <input id="uds-map-did" type="text" value="0x39C0"></label>
+          <label>Rate (Hz) <input id="uds-map-rate" type="number" min="1" max="20" step="1" value="10"></label>
+        </div>
+      </div>
+
+      <div class="uds-poll-block">
+        <div class="uds-poll-header">
+          <span class="uds-poll-name">🌡️ Engine Coolant Temp réelle</span>
           <div class="live-value"><b id="live-temp-val">—</b> <span class="live-unit">°C</span></div>
           <div class="live-age" id="live-temp-age">never</div>
         </div>
-        <div class="live-card">
-          <div class="live-label">CLUSTER displayed temp (DID 0x22D0)</div>
-          <div class="live-value"><b id="cluster-temp-val">—</b> <span class="live-unit">°C</span></div>
-          <button id="cluster-ping" style="margin-top: 6px;">Ping cluster</button>
+        <div class="cfg-grid">
+          <label>Request ID (hex) <input id="uds-temp-req" type="text" value="0x7E0"></label>
+          <label>Response ID (hex) <input id="uds-temp-resp" type="text" value="0x7E8"></label>
+          <label>DID (hex) <input id="uds-temp-did" type="text" value="0x202C"></label>
+          <label>Scale <input id="uds-temp-scale" type="number" step="0.001" value="0.1"></label>
+          <label>Offset <input id="uds-temp-offset" type="number" step="0.1" value="0"></label>
+          <label>Rate (Hz) <input id="uds-temp-rate" type="number" min="1" max="20" step="1" value="5"></label>
         </div>
+      </div>
+
+      <div class="uds-poll-block">
+        <div class="uds-poll-header">
+          <span class="uds-poll-name">🅺 CLUSTER displayed temp (one-shot)</span>
+          <div class="live-value"><b id="cluster-temp-val">—</b> <span class="live-unit">°C</span></div>
+        </div>
+        <div class="cfg-grid">
+          <label>Request ID (hex) <input id="uds-cluster-req" type="text" value="0x714"></label>
+          <label>Response ID (hex) <input id="uds-cluster-resp" type="text" value="0x77E"></label>
+          <label>DID (hex) <input id="uds-cluster-did" type="text" value="0x22D0"></label>
+          <label>Scale <input id="uds-cluster-scale" type="number" step="0.001" value="0.75"></label>
+          <label>Offset <input id="uds-cluster-offset" type="number" step="0.1" value="0"></label>
+        </div>
+        <button id="cluster-ping" style="margin-top: 6px;">Ping cluster</button>
+      </div>
+
+      <div class="row" style="margin-top: 10px;">
+        <button id="uds-save">💾 Save UDS config</button>
+        <span id="uds-status" class="hint"></span>
       </div>
     </details>
   </section>
@@ -281,6 +315,6 @@
 </main>
 
 <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
-<script src="app.js?v=lights1"></script>
+<script src="app.js?v=v8"></script>
 </body>
 </html>

@@ -129,7 +129,8 @@ def next_mqb_counter(address: int) -> int:
 # v5 = removed fuel (analog only on this cluster); fixed gear (byte 3 = 0 for P/R/N/D)
 # v6 = REMOVED Airbag_01 from system context (safety) + added Vehicle Mode (coolant-only on real car)
 # v7 = added "lights" section (~25 dashboard indicators with editable per-light config)
-CONFIG_VERSION = 7
+# v8 = wake_once now blocks in vehicle mode (was a safety hole) + UDS poll IDs/DIDs editable
+CONFIG_VERSION = 8
 
 BUTTON_NAMES = ["UP", "DOWN", "LEFT", "RIGHT", "OK", "BACK"]
 
@@ -1304,10 +1305,14 @@ def ws_reset_config(_):
 
 @socketio.on("wake_once")
 def ws_wake_once(_):
-    """Send one wake-up frame. Gated by armed (it's a write to the bus, like other broadcasts)."""
+    """Send one wake-up frame. BLOCKED in vehicle mode (real gateway already broadcasts Klemmen)."""
     with state_lock:
         armed = state.armed
         connected = state.connected
+        vehicle = state.vehicle_mode
+    if vehicle:
+        socketio.emit("status", {"error": "wake blocked: VEHICLE MODE (bench-only)"})
+        return
     if not armed:
         socketio.emit("status", {"error": "wake blocked: master switch is DISARMED"})
         return

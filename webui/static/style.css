@@ -155,6 +155,16 @@ main {
 .cfg-grid label { display: flex; flex-direction: column; font-size: 11px; color: var(--muted); }
 .cfg-grid label input { margin-top: 3px; color: var(--fg); }
 
+.uds-poll-block {
+  background: #0e1014; border: 1px solid var(--border); border-radius: 8px;
+  padding: 10px 12px; margin-bottom: 10px;
+}
+.uds-poll-header {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 12px;
+  flex-wrap: wrap; padding-bottom: 8px; border-bottom: 1px solid var(--border); margin-bottom: 8px;
+}
+.uds-poll-name { font-weight: 600; color: var(--accent); }
+
 .live-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
 .live-card {
   background: #0e1014; border: 1px solid var(--border); border-radius: 8px;

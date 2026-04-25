@@ -250,6 +250,60 @@ sock.on("cluster_ping_response", (d) => {
   $("#cluster-temp-val").textContent = d.temp_c.toFixed(1);
 });
 
+// ---------- Editable UDS configs (MAP / engine_temp / cluster_ping) ----------
+
+function fillUdsFromConfig() {
+  if (!CONFIG) return;
+  const u = CONFIG.uds || {};
+  if (u.request_id !== undefined)  $("#uds-map-req").value  = "0x" + Number(u.request_id).toString(16).toUpperCase();
+  if (u.response_id !== undefined) $("#uds-map-resp").value = "0x" + Number(u.response_id).toString(16).toUpperCase();
+  if (u.did !== undefined)         $("#uds-map-did").value  = "0x" + Number(u.did).toString(16).toUpperCase();
+  if (u.rate_hz !== undefined)     $("#uds-map-rate").value = u.rate_hz;
+  const e = CONFIG.engine_temp || {};
+  if (e.request_id !== undefined)  $("#uds-temp-req").value  = "0x" + Number(e.request_id).toString(16).toUpperCase();
+  if (e.response_id !== undefined) $("#uds-temp-resp").value = "0x" + Number(e.response_id).toString(16).toUpperCase();
+  if (e.did !== undefined)         $("#uds-temp-did").value  = "0x" + Number(e.did).toString(16).toUpperCase();
+  if (e.scale !== undefined)       $("#uds-temp-scale").value  = e.scale;
+  if (e.offset !== undefined)      $("#uds-temp-offset").value = e.offset;
+  if (e.rate_hz !== undefined)     $("#uds-temp-rate").value   = e.rate_hz;
+  const c = CONFIG.cluster_ping || {};
+  if (c.request_id !== undefined)  $("#uds-cluster-req").value  = "0x" + Number(c.request_id).toString(16).toUpperCase();
+  if (c.response_id !== undefined) $("#uds-cluster-resp").value = "0x" + Number(c.response_id).toString(16).toUpperCase();
+  if (c.did !== undefined)         $("#uds-cluster-did").value  = "0x" + Number(c.did).toString(16).toUpperCase();
+  if (c.scale !== undefined)       $("#uds-cluster-scale").value  = c.scale;
+  if (c.offset !== undefined)      $("#uds-cluster-offset").value = c.offset;
+}
+
+function readUdsToConfig() {
+  if (!CONFIG) return;
+  const parseHex = (s) => parseInt(String(s).replace(/^0x/i, ""), 16) || 0;
+  CONFIG.uds = CONFIG.uds || {};
+  CONFIG.uds.request_id  = parseHex($("#uds-map-req").value);
+  CONFIG.uds.response_id = parseHex($("#uds-map-resp").value);
+  CONFIG.uds.did         = parseHex($("#uds-map-did").value);
+  CONFIG.uds.rate_hz     = parseFloat($("#uds-map-rate").value) || 10;
+  CONFIG.engine_temp = CONFIG.engine_temp || {};
+  CONFIG.engine_temp.request_id  = parseHex($("#uds-temp-req").value);
+  CONFIG.engine_temp.response_id = parseHex($("#uds-temp-resp").value);
+  CONFIG.engine_temp.did         = parseHex($("#uds-temp-did").value);
+  CONFIG.engine_temp.scale  = parseFloat($("#uds-temp-scale").value) || 0.1;
+  CONFIG.engine_temp.offset = parseFloat($("#uds-temp-offset").value) || 0;
+  CONFIG.engine_temp.rate_hz = parseFloat($("#uds-temp-rate").value) || 5;
+  CONFIG.cluster_ping = CONFIG.cluster_ping || {};
+  CONFIG.cluster_ping.request_id  = parseHex($("#uds-cluster-req").value);
+  CONFIG.cluster_ping.response_id = parseHex($("#uds-cluster-resp").value);
+  CONFIG.cluster_ping.did         = parseHex($("#uds-cluster-did").value);
+  CONFIG.cluster_ping.scale  = parseFloat($("#uds-cluster-scale").value) || 0.75;
+  CONFIG.cluster_ping.offset = parseFloat($("#uds-cluster-offset").value) || 0;
+}
+
+$("#uds-save").onclick = () => {
+  readUdsToConfig();
+  sock.emit("save_config", CONFIG);
+  $("#uds-status").textContent = "saved ✓";
+  setTimeout(() => ($("#uds-status").textContent = ""), 1500);
+};
+
 // RPM
 const rpmSlider = $("#rpm-slider");
 function updateRpm() {
@@ -493,6 +547,7 @@ sock.on("config_reset", async () => {
   STATE = j.state;
   syncToggles();
   fillAdvancedFromConfig();
+  fillUdsFromConfig();
   renderMfaRows();
   renderLightsRows();
   updateAll();
@@ -592,6 +647,7 @@ function updateAll() {
   applyArmed(!!STATE.armed);
   applyVehicleMode(!!STATE.vehicle_mode);
   fillAdvancedFromConfig();
+  fillUdsFromConfig();
   renderMfaRows();
   renderLightsRows();
   updateAll();
