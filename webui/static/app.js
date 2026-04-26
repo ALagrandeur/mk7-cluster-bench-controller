@@ -433,6 +433,23 @@ $("#mfa-reset").onclick = () => {
   setTimeout(() => ($("#mfa-status").textContent = ""), 1500);
 };
 
+$("#mfa-context").onclick = () => {
+  // Auto-enable everything required for MFSW to potentially work:
+  //   - Wake (Klemmen_Status_01) — drives system_context_loop
+  //   - System context bundle fires automatically when wake is on (LH_EPS_01 etc.)
+  //   - Engine code (Motor_Code_01) — required engine ECU heartbeat
+  //   - Engine RPM (Motor_04) — confirms engine "running"
+  if (!CONFIG) return;
+  for (const section of ["wake", "engine_code", "engine_rpm"]) {
+    if (CONFIG[section]) {
+      CONFIG[section].enabled = true;
+      sock.emit("set_enable", { section, value: true });
+    }
+  }
+  $("#mfa-status").textContent = "context enabled (Wake + engine_code + engine_rpm) — try MFA buttons now";
+  setTimeout(() => ($("#mfa-status").textContent = ""), 4000);
+};
+
 document.addEventListener("keydown", (e) => {
   if (e.target.tagName === "INPUT" || e.target.tagName === "SELECT" || e.target.tagName === "TEXTAREA") return;
   const map = { ArrowUp: "UP", ArrowDown: "DOWN", ArrowLeft: "LEFT", ArrowRight: "RIGHT", Enter: "OK", Backspace: "BACK", Escape: "BACK" };

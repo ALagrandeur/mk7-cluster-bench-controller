@@ -1,0 +1,276 @@
+VERSION "Universal OBD-II PIDs DBC — works on any OBD-II compliant vehicle (1996+ US, 2001+ EU/JP)"
+
+NS_ :
+    NS_DESC_
+    CM_
+    BA_DEF_
+    BA_
+    VAL_
+    CAT_DEF_
+    CAT_
+    FILTER
+    BA_DEF_DEF_
+    EV_DATA_
+    ENVVAR_DATA_
+    SGTYPE_
+    SGTYPE_VAL_
+    BA_DEF_SGTYPE_
+    BA_SGTYPE_
+    SIG_TYPE_REF_
+    VAL_TABLE_
+    SIG_GROUP_
+    SIG_VALTYPE_
+    SIGTYPE_VALTYPE_
+    BO_TX_BU_
+    BA_DEF_REL_
+    BA_REL_
+    BA_DEF_DEF_REL_
+    BU_SG_REL_
+    BU_EV_REL_
+    BU_BO_REL_
+    SG_MUL_VAL_
+
+BS_:
+
+BU_: Tester ECM TCM ABS HVAC Vehicle
+
+
+VAL_TABLE_ FuelType
+    0 "Not_Available"
+    1 "Gasoline"
+    2 "Methanol"
+    3 "Ethanol"
+    4 "Diesel"
+    5 "LPG"
+    6 "CNG"
+    7 "Propane"
+    8 "Electric"
+    9 "Bifuel_running_Gasoline"
+    10 "Bifuel_running_Methanol"
+    11 "Bifuel_running_Ethanol"
+    12 "Bifuel_running_LPG"
+    13 "Bifuel_running_CNG"
+    14 "Bifuel_running_Propane"
+    15 "Bifuel_running_Electric"
+    16 "Bifuel_running_Electric_Combustion"
+    17 "Hybrid_Gasoline"
+    18 "Hybrid_Ethanol"
+    19 "Hybrid_Diesel"
+    20 "Hybrid_Electric"
+    21 "Hybrid_Electric_Combustion"
+    22 "Hybrid_Regenerative"
+    23 "Bifuel_running_Diesel" ;
+
+
+BO_ 2024 OBD2_Request: 8 Tester
+ SG_ length : 0|8@1+ (1,0) [0|8] "" ECM
+ SG_ service : 8|8@1+ (1,0) [0|255] "" ECM
+ SG_ pid : 16|8@1+ (1,0) [0|255] "" ECM
+
+BO_ 2025 OBD2_Request_ECM_2: 8 Tester
+ SG_ length : 0|8@1+ (1,0) [0|8] "" ECM
+ SG_ service : 8|8@1+ (1,0) [0|255] "" ECM
+ SG_ pid : 16|8@1+ (1,0) [0|255] "" ECM
+
+BO_ 2015 OBD2_Broadcast_Request: 8 Tester
+ SG_ length : 0|8@1+ (1,0) [0|8] "" Vehicle
+ SG_ service : 8|8@1+ (1,0) [0|255] "" Vehicle
+ SG_ pid : 16|8@1+ (1,0) [0|255] "" Vehicle
+
+BO_ 2032 OBD2_Response_ECM: 8 ECM
+ SG_ length : 0|8@1+ (1,0) [0|8] "" Tester
+ SG_ service_response : 8|8@1+ (1,0) [0|255] "" Tester
+ SG_ pid_echo : 16|8@1+ (1,0) [0|255] "" Tester
+ SG_ A : 24|8@1+ (1,0) [0|255] "" Tester
+ SG_ B : 32|8@1+ (1,0) [0|255] "" Tester
+ SG_ C : 40|8@1+ (1,0) [0|255] "" Tester
+ SG_ D : 48|8@1+ (1,0) [0|255] "" Tester
+
+BO_ 2033 OBD2_Response_TCM: 8 TCM
+ SG_ length : 0|8@1+ (1,0) [0|8] "" Tester
+ SG_ service_response : 8|8@1+ (1,0) [0|255] "" Tester
+ SG_ pid_echo : 16|8@1+ (1,0) [0|255] "" Tester
+ SG_ A : 24|8@1+ (1,0) [0|255] "" Tester
+ SG_ B : 32|8@1+ (1,0) [0|255] "" Tester
+
+
+BO_ 1280 OBD2_PID_05_CoolantTemp: 8 ECM
+ SG_ pid_echo : 16|8@1+ (1,0) [0|255] "" Tester
+ SG_ Coolant_Temperature : 24|8@1+ (1,-40) [-40|215] "DegC" Tester
+
+BO_ 1281 OBD2_PID_0C_RPM: 8 ECM
+ SG_ pid_echo : 16|8@1+ (1,0) [0|255] "" Tester
+ SG_ Engine_RPM : 24|16@0+ (0.25,0) [0|16383.75] "RPM" Tester
+
+BO_ 1282 OBD2_PID_0D_VehicleSpeed: 8 ECM
+ SG_ pid_echo : 16|8@1+ (1,0) [0|255] "" Tester
+ SG_ Vehicle_Speed : 24|8@1+ (1,0) [0|255] "km/h" Tester
+
+BO_ 1283 OBD2_PID_0F_IntakeAirTemp: 8 ECM
+ SG_ pid_echo : 16|8@1+ (1,0) [0|255] "" Tester
+ SG_ Intake_Air_Temp : 24|8@1+ (1,-40) [-40|215] "DegC" Tester
+
+BO_ 1284 OBD2_PID_10_MAF: 8 ECM
+ SG_ pid_echo : 16|8@1+ (1,0) [0|255] "" Tester
+ SG_ MAF_Airflow : 24|16@0+ (0.01,0) [0|655.35] "g/s" Tester
+
+BO_ 1285 OBD2_PID_11_ThrottlePos: 8 ECM
+ SG_ pid_echo : 16|8@1+ (1,0) [0|255] "" Tester
+ SG_ Throttle_Position : 24|8@1+ (0.392156,0) [0|100] "%" Tester
+
+BO_ 1286 OBD2_PID_2F_FuelLevel: 8 ECM
+ SG_ pid_echo : 16|8@1+ (1,0) [0|255] "" Tester
+ SG_ Fuel_Level : 24|8@1+ (0.392156,0) [0|100] "%" Tester
+
+BO_ 1287 OBD2_PID_46_AmbientTemp: 8 ECM
+ SG_ pid_echo : 16|8@1+ (1,0) [0|255] "" Tester
+ SG_ Ambient_Air_Temp : 24|8@1+ (1,-40) [-40|215] "DegC" Tester
+
+BO_ 1288 OBD2_PID_5C_OilTemp: 8 ECM
+ SG_ pid_echo : 16|8@1+ (1,0) [0|255] "" Tester
+ SG_ Engine_Oil_Temp : 24|8@1+ (1,-40) [-40|215] "DegC" Tester
+
+BO_ 1289 OBD2_PID_42_BatteryVoltage: 8 ECM
+ SG_ pid_echo : 16|8@1+ (1,0) [0|255] "" Tester
+ SG_ Battery_Voltage : 24|16@0+ (0.001,0) [0|65.535] "V" Tester
+
+BO_ 1290 OBD2_PID_5E_FuelRate: 8 ECM
+ SG_ pid_echo : 16|8@1+ (1,0) [0|255] "" Tester
+ SG_ Engine_Fuel_Rate : 24|16@0+ (0.05,0) [0|3276.75] "L/h" Tester
+
+BO_ 1291 OBD2_PID_0B_IntakeManifoldPressure: 8 ECM
+ SG_ pid_echo : 16|8@1+ (1,0) [0|255] "" Tester
+ SG_ Intake_MAP : 24|8@1+ (1,0) [0|255] "kPa" Tester
+
+BO_ 1292 OBD2_PID_04_EngineLoad: 8 ECM
+ SG_ pid_echo : 16|8@1+ (1,0) [0|255] "" Tester
+ SG_ Engine_Load : 24|8@1+ (0.392156,0) [0|100] "%" Tester
+
+BO_ 1293 OBD2_PID_0E_TimingAdvance: 8 ECM
+ SG_ pid_echo : 16|8@1+ (1,0) [0|255] "" Tester
+ SG_ Timing_Advance : 24|8@1+ (0.5,-64) [-64|63.5] "deg" Tester
+
+BO_ 1294 OBD2_PID_14_O2_B1S1: 8 ECM
+ SG_ pid_echo : 16|8@1+ (1,0) [0|255] "" Tester
+ SG_ O2_Voltage_B1S1 : 24|8@1+ (0.005,0) [0|1.275] "V" Tester
+ SG_ O2_FuelTrim_B1S1 : 32|8@1+ (0.78125,-100) [-100|99.2] "%" Tester
+
+BO_ 1295 OBD2_PID_31_DistanceSinceClear: 8 ECM
+ SG_ pid_echo : 16|8@1+ (1,0) [0|255] "" Tester
+ SG_ Distance_Since_DTC_Clear : 24|16@0+ (1,0) [0|65535] "km" Tester
+
+BO_ 1296 OBD2_PID_21_DistanceMIL: 8 ECM
+ SG_ pid_echo : 16|8@1+ (1,0) [0|255] "" Tester
+ SG_ Distance_With_MIL_On : 24|16@0+ (1,0) [0|65535] "km" Tester
+
+BO_ 1297 OBD2_PID_33_BarometricPressure: 8 ECM
+ SG_ pid_echo : 16|8@1+ (1,0) [0|255] "" Tester
+ SG_ Barometric_Pressure : 24|8@1+ (1,0) [0|255] "kPa" Tester
+
+BO_ 1298 OBD2_PID_51_FuelType: 8 ECM
+ SG_ pid_echo : 16|8@1+ (1,0) [0|255] "" Tester
+ SG_ Fuel_Type : 24|8@1+ (1,0) [0|23] "" Tester
+
+BO_ 1299 OBD2_PID_43_AbsoluteLoad: 8 ECM
+ SG_ pid_echo : 16|8@1+ (1,0) [0|255] "" Tester
+ SG_ Absolute_Load_Value : 24|16@0+ (0.392156,0) [0|25700] "%" Tester
+
+
+CM_ "UNIVERSAL OBD-II DBC for SavvyCAN
+
+Compatible with virtually any OBD-II vehicle (1996+ in the US, 2001+ in Europe/Japan).
+Standard CAN IDs:
+  0x7DF (2015) — Functional broadcast diagnostic request (queries any responding ECU)
+  0x7E0 (2016) — Physical request to ECU #1 (Engine — ECM)
+  0x7E1 (2017) — Physical request to ECU #2 (Transmission — TCM)
+  ...
+  0x7E7 (2023) — Physical request to ECU #8
+  0x7E8 (2024) — Response from ECU #1 (ECM)
+  0x7E9 (2025) — Response from ECU #2 (TCM)
+  ...
+  0x7EF (2031) — Response from ECU #8
+
+Format of any OBD-II request/response:
+  Byte 0: ISO-TP single frame length (3 for query, 4-5 for response with 1-2 data bytes)
+  Byte 1: Service ID
+           0x01 = Show current data
+           0x02 = Show freeze frame data
+           0x03 = Show stored DTCs
+           0x04 = Clear DTCs
+           0x05 = Test results, oxygen sensor monitoring
+           0x07 = Show pending DTCs
+           0x09 = Vehicle info (VIN, etc.)
+           0x0A = Permanent DTCs
+           0x22 = ReadDataByIdentifier (extended UDS, manufacturer-specific DIDs)
+           0x2E = WriteDataByIdentifier (extended UDS)
+  Byte 2: PID (Parameter ID) for service 0x01, or first byte of DID for service 0x22
+  Bytes 3-7: PID-specific data (or padding 0xAA in some implementations)
+
+Response format (service = request_service + 0x40):
+  Byte 0: ISO-TP length
+  Byte 1: Service response (0x41 for current data, 0x62 for ReadDID, etc.)
+  Byte 2: PID echo
+  Bytes 3-7: Data (A, B, C, D, E variables in OBD-II spec)
+
+This DBC defines the most common Service 01 PIDs as separate BO_ entries to make
+SavvyCAN auto-decode them when received. For service 0x22 (manufacturer DIDs),
+use vehicle-specific DBCs (e.g. vw_mk7_cluster.dbc).
+
+To USE in SavvyCAN:
+  1. File → DBC files → Manage → Load this DBC (and your vehicle DBC)
+  2. Send a query: ID 0x7DF, length 8, data: '02 01 0C 00 00 00 00 00' (Service 01, PID 0x0C = RPM)
+  3. Response will appear on 0x7E8: '04 41 0C XX XX 00 00 00' where XX XX = RPM*4 big-endian
+  4. SavvyCAN will auto-decode it as 'Engine_RPM = N RPM' if this DBC is loaded.
+
+Notes on encoding in this DBC:
+  - Sender 'Tester' = OBD-II scanner / your tool
+  - Sender 'ECM' = Engine Control Module (responds to 0x7E0 queries with 0x7E8)
+  - Each PID response (0x7E8 with specific PID byte) is modeled as a separate BO_
+    so signal positions and scaling can be auto-decoded by SavvyCAN.
+  - PIDs are typed with byte order @0+ (big-endian) for multi-byte values per OBD-II spec.
+
+Common PIDs covered:
+  04 — Engine load %
+  05 — Coolant temp
+  0B — Intake manifold absolute pressure (kPa)
+  0C — Engine RPM
+  0D — Vehicle speed
+  0E — Timing advance
+  0F — Intake air temp
+  10 — MAF airflow
+  11 — Throttle position
+  14 — O2 sensor B1S1
+  21 — Distance with MIL on
+  2F — Fuel level
+  31 — Distance since DTC clear
+  33 — Barometric pressure
+  42 — Battery voltage
+  43 — Absolute load value
+  46 — Ambient air temperature
+  51 — Fuel type
+  5C — Engine oil temp
+  5E — Engine fuel rate
+
+Reference: https://en.wikipedia.org/wiki/OBD-II_PIDs (full PID list)";
+
+
+CM_ BO_ 2015 "Functional broadcast OBD-II request — any responding ECU will reply (typically 0x7E8 for ECM).";
+CM_ BO_ 2024 "Physical query to Engine ECU (ECM). Responses come back on 0x7E8.";
+CM_ BO_ 2032 "Generic ECM response container — for unknown PIDs, parse manually. Specific PIDs have dedicated BO_ entries below.";
+
+CM_ BO_ 1280 "OBD-II PID 0x05 — Engine Coolant Temperature. 1 byte, formula: temp_C = A - 40, range -40 to 215 °C.";
+CM_ BO_ 1281 "OBD-II PID 0x0C — Engine RPM. 2 bytes big-endian, formula: RPM = (256*A + B) / 4, range 0 to 16383.75 RPM.";
+CM_ BO_ 1282 "OBD-II PID 0x0D — Vehicle Speed. 1 byte, formula: speed_kmh = A, range 0 to 255 km/h.";
+CM_ BO_ 1283 "OBD-II PID 0x0F — Intake Air Temperature. 1 byte, formula: temp_C = A - 40.";
+CM_ BO_ 1284 "OBD-II PID 0x10 — MAF (Mass Air Flow) sensor. 2 bytes BE, formula: g/s = (256*A + B) / 100.";
+CM_ BO_ 1285 "OBD-II PID 0x11 — Throttle Position. 1 byte, formula: % = 100*A/255.";
+CM_ BO_ 1286 "OBD-II PID 0x2F — Fuel Tank Level Input. 1 byte, formula: % = 100*A/255.";
+CM_ BO_ 1287 "OBD-II PID 0x46 — Ambient air temperature. 1 byte, formula: temp_C = A - 40.";
+CM_ BO_ 1288 "OBD-II PID 0x5C — Engine Oil Temperature. 1 byte, formula: temp_C = A - 40.";
+CM_ BO_ 1289 "OBD-II PID 0x42 — Control module voltage (battery). 2 bytes BE, formula: V = (256*A + B) / 1000.";
+CM_ BO_ 1290 "OBD-II PID 0x5E — Engine fuel rate. 2 bytes BE, formula: L/h = (256*A + B) * 0.05.";
+CM_ BO_ 1291 "OBD-II PID 0x0B — Intake Manifold Absolute Pressure. 1 byte, formula: kPa = A. For boost in psi: ((A - 100) * 0.145).";
+CM_ BO_ 1292 "OBD-II PID 0x04 — Calculated Engine Load. 1 byte, formula: % = 100*A/255.";
+CM_ BO_ 1293 "OBD-II PID 0x0E — Timing Advance. 1 byte, formula: degrees = A/2 - 64.";
+CM_ BO_ 1297 "OBD-II PID 0x33 — Absolute Barometric Pressure. 1 byte, formula: kPa = A.";
+CM_ BO_ 1298 "OBD-II PID 0x51 — Fuel type. 1 byte enum.";

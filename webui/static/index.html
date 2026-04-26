@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>MK7 Cluster Bench Controller</title>
-<link rel="stylesheet" href="style.css?v=sniffer1">
+<link rel="stylesheet" href="style.css?v=ctx1">
 </head>
 <body>
 
@@ -248,11 +248,13 @@
   <section class="card mfa-card bench-only" style="grid-column: 1 / -1;">
     <h2>🎮 MFA Steering Wheel Buttons</h2>
     <p class="fn-hint">Click le bouton pour envoyer (press + release auto). Chaque bouton a son <b>ID</b>, <b>length</b>, <b>press payload</b> et <b>release payload</b> éditables. Raccourcis clavier: ←↑→↓ + Enter (OK) + Esc (BACK).<br>
-       💡 <b>Pour identifier les vraies adresses</b>: branche en parallèle sur le CAN du véhicule, sniffe avec SavvyCAN pendant que tu presses chaque bouton du volant, repère l'ID + le payload qui change, puis édite ici et clique <b>Save buttons</b>.</p>
+       ⚠️ <b>Prérequis</b>: le cluster ignore MFSW si <b>LH_EPS_01</b> (steering "alive") n'est pas dans le bundle système. Active <b>Wake</b> en haut → le System Context Bundle se déclenche → MFSW devient acceptable.<br>
+       💡 <b>Pour identifier les vraies adresses</b>: branche en parallèle voiture, sniffe avec <b>Bus Sniffer</b> en bas pendant que tu presses chaque bouton physique du volant, repère l'ID + le payload qui change, puis édite ici et clique <b>Save buttons</b>.</p>
     <div id="mfa-rows"></div>
     <div class="row" style="margin-top: 12px;">
       <button id="mfa-save">💾 Save buttons config</button>
       <button id="mfa-reset" class="scanner-stop">⟲ Reset to r00li defaults</button>
+      <button id="mfa-context">🔆 Auto-enable required context</button>
       <span id="mfa-status" class="hint"></span>
     </div>
   </section>
@@ -261,7 +263,8 @@
   <section class="card lights-card bench-only" style="grid-column: 1 / -1;">
     <h2>💡 Dashboard Lights & Indicators</h2>
     <p class="fn-hint">Chaque ligne = un témoin. Click <b>ON</b> pour envoyer le payload "allumé", <b>OFF</b> pour éteindre.<br>
-       Pré-remplis avec les bits connus (Kombi_01 0x30B byte 0/2 d'openDBC). Les ID = <code>0x000</code> sont à identifier dans SavvyCAN: branche en parallèle voiture, allume le témoin réel, repère l'ID + payload, édite ici, click <b>Save lights</b>.</p>
+       ⚠️ <b>Important</b>: les défauts utilisent Kombi_01 (0x30B) qui est en réalité <b>envoyé PAR le cluster</b>, pas vers lui (cf. openpilot ne l'envoie jamais). Donc les bits Kombi_01 ne contrôlent probablement PAS les lampes — ils REPORTENT l'état actuel. Les vraies lampes sont contrôlées par les <b>messages source</b> (ESP_21 pour ABS, etc.). À identifier au cas par cas via Bus Sniffer.<br>
+       💡 <b>Méthode pour identifier</b>: branche voiture, snapshot dans Bus Sniffer, allume le témoin via VCDS ou en simulant la condition (ouvrir porte, etc.), regarde quel ID/byte a changé.</p>
     <div id="lights-rows"></div>
     <div class="row" style="margin-top: 12px;">
       <button id="lights-save">💾 Save lights config</button>
@@ -353,6 +356,6 @@
 </main>
 
 <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
-<script src="app.js?v=sniffer1"></script>
+<script src="app.js?v=ctx1"></script>
 </body>
 </html>
