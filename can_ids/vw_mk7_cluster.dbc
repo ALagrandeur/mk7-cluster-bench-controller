@@ -174,6 +174,8 @@ BO_ 1471 MFSW: 4 Gateway
  SG_ MFSW_Constant : 24|8@1+ (1,0) [0|255] "" Cluster
 
 BO_ 870 BLINKMODI_02: 8 BCM
+ SG_ HAZARD_AKTIV : 20|1@1+ (1,0) [0|1] "" RX
+ SG_ BLINKER_OUTPUT_LIVE : 24|8@1+ (1,0) [0|255] "" RX
  SG_ Blink_byte1 : 8|8@1+ (1,0) [0|255] "" RX
 
 BO_ 1624 LICHT_VORNE_01: 8 BCM
@@ -217,3 +219,4 @@ CM_ BO_ 916 "WBA_03 — CONFIRMED on 5G1 920 740B: byte 1 high nibble drives MFA
 CM_ BO_ 1520 "Dimmung_01 — Gateway → Cluster. byte 1 = backlight target % (0-100). byte 2 = actual %. byte 1 bit 7 = night design.";
 CM_ BO_ 1471 "MFSW (MultiFunction Steering Wheel) — 4 bytes. byte 0 = button code, byte 2 = sub-direction, byte 3 = 0x40 const. Per r00li: UP=06,_,01,40 / DOWN=06,_,0F,40 / LEFT=03,_,01,40 / RIGHT=02,_,01,40 / OK=07,_,01,40 / View=23,_,01,40. byte 1 = 0. NO CRC. Cluster ignores MFSW unless LH_EPS_01 (0x32A) heartbeat is also being broadcast (steering wheel 'alive' context).";
 CM_ BO_ 64 "Airbag_01 — DELIBERATELY NOT TRANSMITTED by mk7-cluster-bench-controller (FORBIDDEN_IDS hard-block). Listed here for reference / passive reception only. Never spoof airbag system messages.";
+CM_ BO_ 870 "BLINKMODI_02 — CONFIRMED hazards trigger from real-vehicle log (Alltrack 2017, May 2026 brake+trans.csv). byte 2 bit 4 = HAZARD_AKTIV (statique 1 quand bouton hazard activé). byte 3 = sortie ampoules en clignotement live (0x20 OFF / 0x3E ON, ~1.5 Hz). For 'Haldex disable when hazards' rule: read byte 2 bit 4 only — ignore byte 3 (it strobes). 6 transitions exactes detectées dans le log à t=41.63/44.83/46.38/49.58/50.43/53.63s = 3 ON/OFF cycles utilisateur.";

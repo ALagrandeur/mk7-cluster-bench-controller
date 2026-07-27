@@ -29,6 +29,10 @@ Thumbs.db
 # Third-party firmware (not part of this project — get it from collin80/ESP32RET)
 ESP32RET_Updater/
 
+# OpenHaldex-C6 fork — source-available third-party code, kept LOCALLY as a
+# read-only reference only. NEVER redistributed in this repo (license + policy).
+analysis/openhaldex_fork/
+
 # IDE
 .vscode/
 .idea/

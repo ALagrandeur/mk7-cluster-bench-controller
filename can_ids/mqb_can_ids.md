@@ -231,6 +231,31 @@ Confirmés à partir de logs OBD-II Alltrack 2017 (avril 2026).
 | **0x3C0** | Klemmen_Status_01 | 4 bytes, byte 2 = 0x03, MQB CRC+counter — réveille le cluster (avec Kl.15 hardware) | Avril 2026 — cluster s'allume |
 | **0x107** | Motor_04 | byte 3 = `0xED` → tachymètre RPM à fond | Avril 2026 — aiguille RPM max |
 
+### 🟢 Signal HAZARDS (confirmé véhicule réel — log brake+trans.csv mai 2026)
+
+**ID `0x366` BLINKMODI_02** — émis par le BCM sur Powertrain CAN.
+
+```
+BO_ 870 BLINKMODI_02: 8 BCM_MQB
+ SG_ HAZARD_AKTIV         : 20|1@1+   → byte 2 bit 4 (0=off, 1=hazards switch ON, statique)
+ SG_ BLINKER_OUTPUT_LIVE  : 24|8@1+   → byte 3 (clignote ~1.5 Hz quand actif: 0x20 ↔ 0x3E)
+```
+
+**Décodage** (3 payloads observés dans le log):
+
+| byte 2 | byte 3 | État |
+|--------|--------|------|
+| `0x00` | `0x20` | Hazards OFF (idle) |
+| `0x10` | `0x3E` | Hazards ON, instant flash haut (lampes allumées) |
+| `0x10` | `0x20` | Hazards ON, instant flash bas (entre clignotement) |
+
+**Pour notre logique "Haldex disable when hazards"** :
+- Lire `byte 2 bit 4` du frame `0x366` (signal stable, pas le clignotement byte 3)
+- `bit = 1` pendant ~3s puis `0` pendant ~1.5s = bouton hazard pressé une fois
+- `bit = 1` en continu = hazards activés
+
+Validation : 6 transitions exactes détectées dans le log à `t=41.63s, 44.83s, 46.38s, 49.58s, 50.43s, 53.63s` correspondant aux 3×ON/OFF effectués par l'utilisateur pendant la capture.
+
 ### 🎯 Coolant gauge: SOLUTION trouvée via r00li/CarCluster
 
 Le projet [r00li/CarCluster](https://github.com/r00li/CarCluster) (testé en production sur Golf 7 MQB) confirme:
