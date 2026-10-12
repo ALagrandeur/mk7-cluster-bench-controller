@@ -1,5 +1,28 @@
 # VW MQB / MK7 CAN ID Reference
 
+> ## 🗂️ À lire d'abord — sections historiques
+>
+> Ce fichier est un **journal de recherche** écrit au fil des essais (avril–mai 2026). Les
+> premières sections n'ont pas été réécrites et sont **historiques** : elles contredisent les
+> résultats obtenus plus tard.
+>
+> - « 2. CAN heartbeat = Kombi_01 (0x30B) », « Pourquoi PAS Klemmen_Status_01 (0x3C0) ? » et
+>   « Si le heartbeat Kombi_01 ne suffit pas » : **dépassés**. Le wake confirmé sur le banc est
+>   **0x3C0 Klemmen_Status_01** (en plus du Kl.15 matériel, broche 16). Kombi_01 (0x30B) est
+>   émis **par** le combiné ; ce n'est pas un heartbeat à lui envoyer.
+> - Les sections marquées 🔴 **DEVINÉ** (coolant, rapport, boutons volant) : **dépassées**.
+>   Les IDs retenus sont **0x647 Motor_09** (coolant → jauge boost), **0x394 WBA_03**
+>   (rapport) et **0x5BF MFSW** (boutons volant) : ce sont les valeurs par défaut de
+>   `webui/server.py`.
+> - Le brochage « 32 broches » de la fin est générique et non vérifié. Le combiné
+>   5G1 920 740B utilise le connecteur **18 broches** décrit plus bas, dans « 1. Le wake
+>   principal est HARDWARE ».
+>
+> Les IDs **confirmés** sont dans les sections plus bas (« DIDs UDS confirmés », « Broadcasts
+> CAN confirmés sur le bench », « Coolant gauge: SOLUTION trouvée », « Signal HAZARDS ») et,
+> pour le véhicule, dans le `CLAUDE.md` de [BOT32](https://github.com/ALagrandeur/BOT32), §8
+> « IDs CAN & DIDs confirmés ».
+
 > ## ⚠️ Convention de fiabilité
 >
 > Ce document distingue 3 niveaux de confiance :

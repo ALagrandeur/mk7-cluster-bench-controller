@@ -1,5 +1,19 @@
 # Télécommande relais 12V — ESP32-S3 AMOLED ↔ ESP32
 
+> ⚠️ **Projet legacy (remplacé) — conservé pour référence.**
+> Ce dossier est l'**ancêtre de [Remote32 / `Recepteur_AMOLED`](https://github.com/ALagrandeur/Remote32)**
+> (la manette universelle actuelle), qui a repris sa couche matérielle « tel quel » puis l'a
+> corrigée et fait évoluer.
+> - Il cible la carte **V1** : écran **SH8601**, tactile **FT3168**. La carte actuelle est une
+>   **V2** (écran CO5300 + tactile CST820) : ce code ne correspond plus au matériel.
+> - Il utilise encore l'API GFX d'avant le correctif de Remote32 (commit `64fa50d`) :
+>   la GFX 1.4.9 n'a pas `Arduino_SH8601`, et avec la GFX ≥ 1.5.0 `setBrightness()` via
+>   `Arduino_GFX*` et la constante `BLACK` ne compilent plus. Il ne compile donc
+>   probablement avec aucune des deux (non compilé ici, **à confirmer**).
+> - La fonction « télécommande de relais 12V » n'existe dans aucun autre dépôt.
+> - Pas de numéro de version firmware (seulement `ESPNOW_VERSION 1`). L'archivage éventuel
+>   reste à décider par le propriétaire.
+
 Interface tactile **style iOS** sur une carte **Waveshare ESP32-S3-Touch-AMOLED-1.8**
 qui envoie des commandes **ON / OFF** en **ESP-NOW (broadcast)** à un second ESP32
 (DevKit standard) pilotant un **relais 12V** à distance.
@@ -29,7 +43,7 @@ Dans **Outils → Gérer les bibliothèques**, installer :
 
 | Librairie | Version |
 |---|---|
-| **GFX Library for Arduino** (moononournation) | **1.4.9** |
+| **GFX Library for Arduino** (moononournation) | **1.4.9** (version d'origine ; voir l'avertissement en tête : elle n'a pas `Arduino_SH8601`) |
 | **lvgl** | **8.4.0** |
 
 Et le **cœur ESP32** (Gestionnaire de cartes) : **esp32 by Espressif ≥ 3.0.6**
@@ -86,8 +100,10 @@ Documents/Arduino/libraries/lv_conf.h
 
 ### Écran d'accueil
 - **Gros bouton vert ON** / **rouge OFF** → envoient la commande au relais.
-- **Pilule d'état** : « Récepteur connecté » (vert) dès qu'un accusé est reçu,
-  sinon « Hors ligne ».
+- **Pilule d'état** : « Récepteur connecté » (vert) pendant **3 s** après chaque accusé
+  reçu, sinon « Hors ligne ». Le récepteur n'envoie un accusé **qu'en réponse à une
+  commande** et l'émetteur n'envoie pas de keepalive : la pilule repasse donc
+  « Hors ligne » 3 s après le dernier appui, c'est normal.
 - **Roue crantée** (haut-droite) → ouvre les **Réglages**.
 
 ### Réglages
@@ -131,7 +147,7 @@ Documents/Arduino/libraries/lv_conf.h
 | Image décalée sur le bord | Ajuster les offsets du constructeur `Arduino_SH8601` dans `hw_display.cpp`. |
 | Tactile décalé/inversé | Inverser X ou Y dans `ft3168_read()` (`x = LCD_WIDTH-1-x`, etc.). |
 | Le relais s'active à l'envers | Changer **Logique relais** (BAS/HAUT) dans les réglages. |
-| « Hors ligne » en permanence | Même **canal** des deux côtés ? Récepteur alimenté ? Distance/obstacles ? |
+| « Hors ligne » même juste après un appui ON/OFF | Même **canal** des deux côtés ? Récepteur alimenté ? Distance/obstacles ? (Au repos, « Hors ligne » est normal : voir la pilule d'état au §5.) |
 | Erreur compile `lv_conf.h` introuvable | Le fichier doit être dans `Documents/Arduino/libraries/`, pas dans le sketch. |
 | Récepteur : signature `on_recv` | Cœur esp32 **≥ 3.0**. Pour un cœur 2.x, ancienne signature `(const uint8_t*mac,…)`. |
 
