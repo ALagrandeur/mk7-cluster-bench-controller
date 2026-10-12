@@ -47,7 +47,7 @@ git clone https://github.com/ALagrandeur/Remote32.git
 | Dépôt | Branche | Contenu |
 |---|---|---|
 | mk7-cluster-bench-controller | `main` | webui de banc, `can_ids/`, `analysis/`, `AMOLED_Remote/` (legacy) |
-| BOT32 | `master` | firmware ESP Main **v4.6.0** + webui (dernière version confirmée en voiture : v4.5.0) |
+| BOT32 | `master` | firmware ESP Main **v4.6.0 STABLE** (confirmée en voiture le 2026-10-12) + webui |
 | BOT32-HALDEX | `main` | firmware X2 Haldex **v3.0.0** |
 | Remote32 | `master` **seulement** | `Emetteur_CAN_X2`, `Recepteur_P4_IDF` (version finale **P4-IDF v1.4**, fusionnée dans master), `Recepteur_AMOLED` |
 
@@ -148,7 +148,7 @@ Repères des derniers commits connus (2026-10-12) :
   - Température embrayage affichée (DID `0x2BF1`, `temp_C = data[5]×2.7 − 241.5`),
     **affichage seul** — la protection thermique native du Haldex suffit (v4.5.0).
 - **Effacement des codes moteur** : bouton de l'UI web (cellulaire + PC) ajouté en v4.6.0,
-  pas encore confirmé en voiture (v4.5.0 reste la dernière version confirmée en voiture).
+  confirmé en voiture (v4.6.0 stable ; v4.5.0 = version stable précédente).
 
 ### Westfalia (Remote32)
 
